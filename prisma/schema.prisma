@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Resource {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique // ex: "usuarios" ou "qualquer-coisa"
+  createdAt DateTime    @default(now())
+  entries   MockEntry[]
+}
+
+model MockEntry {
+  id         String   @id @default(cuid()) // id único (cuid)
+  resourceId Int
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  method     String // GET, POST, PUT, DELETE, etc.
+  path       String? // rota completa ou subpath (ex: "/abc/123")
+  statusCode Int      @default(200) // código HTTP retornado pelo mock
+  headers    Json? // cabeçalhos (opcional)
+  body       Json? // payload recebido / resposta armazenada
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
